@@ -16,7 +16,7 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 # Expone el puerto donde correrá FastAPI (8000)
-EXPOSE 8000
+EXPOSE 8080
 
 # Lanza la app con Uvicorn
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
