@@ -1,21 +1,22 @@
- # Usa una imagen oficial de Python como base
-FROM python:3.11-slim
+FROM python:3.11
 
- # Define el directorio de trabajo
- WORKDIR /app
- 
- # Copia y actualiza pip antes de instalar dependencias
- COPY requirements.txt .
- #RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
- RUN pip install --upgrade pip && pip install --no-cache-dir --default-timeout=200 -r requirements.txt
- #RUN pip install --upgrade pip && pip install --no-cache-dir -i https://pypi.org/simple -r requirements.txt
- 
- # Copia el código de la aplicación después de instalar dependencias
- COPY . .
- 
- # Expone el puerto en el que se ejecutará la app
- EXPOSE 8080
- 
- # Comando para ejecutar la aplicación
- CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+# Instala las dependencias del sistema (libGL para OpenCV)
+RUN apt-get update && \
+    apt-get install -y libgl1-mesa-glx && \
+    rm -rf /var/lib/apt/lists/*
 
+# Establece el directorio de trabajo en /app
+WORKDIR /app
+
+# Copia los archivos del proyecto al contenedor
+COPY . /app
+
+# Instala las dependencias de Python
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+# Expone el puerto donde correrá FastAPI (8000)
+EXPOSE 8000
+
+# Lanza la app con Uvicorn
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
